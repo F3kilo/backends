@@ -68,9 +68,6 @@ impl MongoBoards {
         let collection = self.0.database("boards_db").collection("boards");
         let query = doc! { "_id": &id };
         let board = collection.find_one_and_delete(query, None).await?;
-
-        // TODO: remove tasks
-
         board.ok_or_else(|| CustomError::NotFound(format!("board with id: {}", id)))
     }
 
