@@ -15,7 +15,7 @@ use futures::future::LocalBoxFuture;
 // 2. Middleware's call method gets called with normal request.
 #[derive(Default, Clone)]
 pub struct CountersTransform {
-
+    counters: Arc<Counters>
 }
 
 // Middleware factory is `Transform` trait from actix-service crate
