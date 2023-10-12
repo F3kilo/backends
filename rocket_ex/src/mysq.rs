@@ -112,7 +112,7 @@ impl Boards {
 
     pub async fn update_task(&self, id: u64, name: &str, data: &TaskData) -> CustomResult<TaskData> {
         sqlx::query!("UPDATE tasks SET name=?, description=? WHERE board_id=? AND name=?", data.name, data.description, id, name)
-            .fetch_one(&self.pool)
+            .execute(&self.pool)
             .await?;
 
         self.read_task(id, &data.name).await

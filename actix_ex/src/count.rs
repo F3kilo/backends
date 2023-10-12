@@ -3,11 +3,7 @@ use std::collections::HashMap;
 use std::future::{ready, Ready};
 use std::sync::{Arc, Mutex};
 
-use actix_web::{
-    dev::{self, Service, ServiceRequest, ServiceResponse, Transform},
-    Error,
-};
-use futures::future::LocalBoxFuture;
+use actix_web::dev::{self, Service, ServiceRequest, Transform};
 
 // There are two steps in middleware processing.
 // 1. Middleware initialization, middleware factory gets called with
@@ -15,20 +11,13 @@ use futures::future::LocalBoxFuture;
 // 2. Middleware's call method gets called with normal request.
 #[derive(Default, Clone)]
 pub struct CountersTransform {
-    counters: Arc<Counters>
+    counters: Arc<Counters>,
 }
 
 // Middleware factory is `Transform` trait from actix-service crate
-// `S` - type of the next service
-// `B` - type of response's body
-impl<S, B> Transform<S, ServiceRequest> for CountersTransform
-where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
-    B: 'static,
-{
-    type Response = ServiceResponse<B>;
-    type Error = Error;
+impl<S: Service<ServiceRequest>> Transform<S, ServiceRequest> for CountersTransform {
+    type Response = S::Response;
+    type Error = S::Error;
     type Transform = CountersMiddleware<S>;
     type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
@@ -46,30 +35,26 @@ pub struct CountersMiddleware<S> {
     service: S,
 }
 
-impl<S, B> Service<ServiceRequest> for CountersMiddleware<S>
+impl<S> Service<ServiceRequest> for CountersMiddleware<S>
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
-    S::Future: 'static,
-    B: 'static,
+    S: Service<ServiceRequest>,
 {
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
+    type Response = S::Response;
+    type Error = S::Error;
+    type Future = S::Future;
 
     dev::forward_ready!(service);
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
-        let addr = req.peer_addr().map(|a| a.to_string()).unwrap_or_else(|| "unknown".to_string());
+        let addr = req
+            .peer_addr()
+            .map(|a| a.to_string())
+            .unwrap_or_else(|| "unknown".to_string());
         self.counters.increase(&addr);
         let count = self.counters.get(&addr);
         log::info!("It's your {count} request");
 
-        let fut = self.service.call(req);
-
-        Box::pin(async move {
-            let res = fut.await?;
-            Ok(res)
-        })
+        self.service.call(req)
     }
 }
 
