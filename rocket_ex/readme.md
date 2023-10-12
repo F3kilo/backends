@@ -1,5 +1,18 @@
 # Rocket + sqlx example
+To run mysql container:
+```bash
+podman run --name mysql_example -e MYSQL_ROOT_PASSWORD=pass -e MYSQL_DATABASE=boards_test -p 3306:3306 mysql:latest
+```
+
 To create db:
+```bash
+podman exec -it mysql_example /bin/bash 
+
+mysql -uroot -p
+
+use boards_test;
+```
+
 ```sql
 CREATE TABLE boards
 (
