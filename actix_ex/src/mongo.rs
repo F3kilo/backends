@@ -1,8 +1,8 @@
+use crate::error::{CustomError, CustomResult};
 use crate::{ObjectId, StreamExt};
 use mongodb::bson::{doc, ser};
 use mongodb::{Client, Collection};
 use serde::{Deserialize, Serialize};
-use crate::error::{CustomError, CustomResult};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct BoardData {

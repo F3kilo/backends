@@ -1,22 +1,22 @@
 mod count;
-mod mongo;
 mod error;
+mod mongo;
 
 use crate::body::BoxBody;
 use crate::count::CountersTransform;
 use actix_web::body;
 use actix_web::http::StatusCode;
 use actix_web::web::{Data, Path};
-use actix_web::{App, dev::Service, HttpResponse, HttpServer, web};
+use actix_web::{dev::Service, web, App, HttpResponse, HttpServer};
+use error::CustomResult;
 use futures::StreamExt;
 use log::LevelFilter;
+use mongo::{BoardData, MongoBoards, TaskData};
+use mongodb::bson::oid::ObjectId;
 use std::env;
 use std::error::Error;
 use std::str::FromStr;
 use std::sync::Arc;
-use mongodb::bson::oid::ObjectId;
-use error::CustomResult;
-use mongo::{BoardData, MongoBoards, TaskData};
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn Error>> {

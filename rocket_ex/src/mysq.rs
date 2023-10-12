@@ -91,10 +91,13 @@ impl Boards {
             .fetch_all(&self.pool)
             .await?;
 
-        let tasks = rows.into_iter().map(|row| TaskData {
-            name: row.name,
-            description: row.description,
-        }).collect();
+        let tasks = rows
+            .into_iter()
+            .map(|row| TaskData {
+                name: row.name,
+                description: row.description,
+            })
+            .collect();
 
         Ok(tasks)
     }
@@ -110,10 +113,21 @@ impl Boards {
         })
     }
 
-    pub async fn update_task(&self, id: u64, name: &str, data: &TaskData) -> CustomResult<TaskData> {
-        sqlx::query!("UPDATE tasks SET name=?, description=? WHERE board_id=? AND name=?", data.name, data.description, id, name)
-            .execute(&self.pool)
-            .await?;
+    pub async fn update_task(
+        &self,
+        id: u64,
+        name: &str,
+        data: &TaskData,
+    ) -> CustomResult<TaskData> {
+        sqlx::query!(
+            "UPDATE tasks SET name=?, description=? WHERE board_id=? AND name=?",
+            data.name,
+            data.description,
+            id,
+            name
+        )
+        .execute(&self.pool)
+        .await?;
 
         self.read_task(id, &data.name).await
     }

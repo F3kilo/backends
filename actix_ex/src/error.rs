@@ -1,7 +1,7 @@
-use actix_web::{HttpResponse, ResponseError};
-use thiserror::Error;
 use crate::{BoxBody, StatusCode};
-use serde::{Serialize, Deserialize};
+use actix_web::{HttpResponse, ResponseError};
+use serde::{Deserialize, Serialize};
+use thiserror::Error;
 
 pub type CustomResult<T> = Result<T, CustomError>;
 
