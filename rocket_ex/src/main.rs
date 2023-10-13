@@ -56,58 +56,56 @@ async fn read_boards(db: &State<Boards>) -> Json<CustomResult<Vec<BoardData>>> {
 }
 
 #[rocket::get("/<id>")]
-async fn read_board(id: &str, db: &State<Boards>) -> Json<CustomResult<BoardData>> {
-    db.read_board(id.parse().unwrap()).await.into()
+async fn read_board(id: u64, db: &State<Boards>) -> Json<CustomResult<BoardData>> {
+    db.read_board(id).await.into()
 }
 
 #[rocket::put("/<id>", data = "<data>")]
 async fn update_board(
-    id: &str,
+    id: u64,
     data: Json<BoardData>,
     db: &State<Boards>,
 ) -> Json<CustomResult<BoardData>> {
-    db.update_board(id.parse().unwrap(), &data).await.into()
+    db.update_board(id, &data).await.into()
 }
 
 #[rocket::delete("/<id>")]
-async fn delete_board(id: &str, db: &State<Boards>) -> Json<CustomResult<BoardData>> {
-    db.delete_board(id.parse().unwrap()).await.into()
+async fn delete_board(id: u64, db: &State<Boards>) -> Json<CustomResult<BoardData>> {
+    db.delete_board(id).await.into()
 }
 
 #[rocket::post("/<id>/task", data = "<data>")]
 async fn create_task(
-    id: &str,
+    id: u64,
     data: Json<TaskData>,
     db: &State<Boards>,
 ) -> Json<CustomResult<TaskData>> {
-    db.create_task(id.parse().unwrap(), &data).await.into()
+    db.create_task(id, &data).await.into()
 }
 
 #[rocket::get("/<id>/task")]
-async fn read_tasks(id: &str, db: &State<Boards>) -> Json<CustomResult<Vec<TaskData>>> {
-    db.read_tasks(id.parse().unwrap()).await.into()
+async fn read_tasks(id: u64, db: &State<Boards>) -> Json<CustomResult<Vec<TaskData>>> {
+    db.read_tasks(id).await.into()
 }
 
 #[rocket::get("/<id>/task/<name>")]
-async fn read_task(id: &str, name: &str, db: &State<Boards>) -> Json<CustomResult<TaskData>> {
-    db.read_task(id.parse().unwrap(), name).await.into()
+async fn read_task(id: u64, name: &str, db: &State<Boards>) -> Json<CustomResult<TaskData>> {
+    db.read_task(id, name).await.into()
 }
 
 #[rocket::put("/<id>/task/<name>", data = "<data>")]
 async fn update_task(
-    id: &str,
+    id: u64,
     name: &str,
     data: Json<TaskData>,
     db: &State<Boards>,
 ) -> Json<CustomResult<TaskData>> {
-    db.update_task(id.parse().unwrap(), name, &data)
-        .await
-        .into()
+    db.update_task(id, name, &data).await.into()
 }
 
 #[rocket::delete("/<id>/task/<name>")]
-async fn delete_task(id: &str, name: &str, db: &State<Boards>) -> Json<CustomResult<TaskData>> {
-    db.delete_task(id.parse().unwrap(), name).await.into()
+async fn delete_task(id: u64, name: &str, db: &State<Boards>) -> Json<CustomResult<TaskData>> {
+    db.delete_task(id, name).await.into()
 }
 
 #[derive(Clone, Serialize, Deserialize)]

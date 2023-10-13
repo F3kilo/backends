@@ -1,4 +1,3 @@
-use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::future::{ready, Ready};
 use std::sync::{Arc, Mutex};
@@ -48,7 +47,7 @@ where
     fn call(&self, req: ServiceRequest) -> Self::Future {
         let addr = req
             .peer_addr()
-            .map(|a| a.to_string())
+            .map(|a| a.ip().to_string())
             .unwrap_or_else(|| "unknown".to_string());
         self.counters.increase(&addr);
         let count = self.counters.get(&addr);
@@ -64,12 +63,10 @@ struct Counters(Mutex<HashMap<String, u64>>);
 impl Counters {
     pub fn increase(&self, key: &str) {
         let mut map = self.0.lock().unwrap();
-        match map.entry(key.to_string()) {
-            Entry::Occupied(mut v) => *v.get_mut() += 1,
-            Entry::Vacant(v) => {
-                v.insert(1);
-            }
-        }
+
+        dbg!(&map, key);
+
+        *map.entry(key.to_string()).or_default() += 1;
     }
 
     pub fn get(&self, key: &str) -> u64 {

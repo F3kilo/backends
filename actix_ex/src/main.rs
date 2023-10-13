@@ -28,11 +28,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mongo = MongoBoards::new(&env::var("MONGO_CONNECTION")?).await;
     let boards_data = Arc::new(mongo);
 
-    HttpServer::new(move || {
-        let counters = CountersTransform::default();
+    let counters = CountersTransform::default();
 
+    HttpServer::new(move || {
         App::new()
-            .wrap(counters)
+            .wrap(counters.clone())
             .wrap_fn(|req, srv| {
                 let addr = req.peer_addr();
                 log::info!("From middleware fn: Hello {addr:?}");
