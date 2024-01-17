@@ -63,9 +63,6 @@ struct Counters(Mutex<HashMap<String, u64>>);
 impl Counters {
     pub fn increase(&self, key: &str) {
         let mut map = self.0.lock().unwrap();
-
-        dbg!(&map, key);
-
         *map.entry(key.to_string()).or_default() += 1;
     }
 
