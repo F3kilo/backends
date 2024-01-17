@@ -1,2 +1,2 @@
 [workspace]
-members = ["actix_ex", "rocket_ex"]
+members = ["actix_ex", "rocket_ex", "axum_ex"]
